@@ -8,23 +8,10 @@ class Deck:
     def __init__(self, SUITS):
 
         self.deck = []
-
-        for i in range(1, 13):
-            for element in SUITS:
-                if i == 1:
-                    face = "Ace"
-                    self.deck.append(face + " of " + element)
-                elif i == 10:
-                    face = "Jack"
-                    self.deck.append(face + " of " + element)
-                elif i == 11:
-                    face = "Queen"
-                    self.deck.append(face + " of " + element)
-                elif i == 12:
-                    face = "King"
-                    self.deck.append(face + " of " + element)
-                else:
-                    self.deck.append(str(i) + " of " + element)
+        with open("Classic_Deck.txt", "r") as file:
+            for line in file:
+                self.deck.append(line.strip("\n"))
+        self.deck.pop(0)  # Remove the header line
     
     def __len__(self):
         return len(self.deck)
@@ -50,5 +37,6 @@ class Hand:
                 "\n".join(self.hand)
 
 my_deck = Deck(CLASSIC)
+
 my_hand = Hand(my_deck)
 print(my_hand)
