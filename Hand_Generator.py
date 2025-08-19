@@ -5,15 +5,15 @@ HAND_SIZE = 5
 
 class Deck:
 
-    def __init__(self, filename):
+    def __init__(self, filename="NULL"):
 
         self.deck = []
-
-        with open(filename, "r") as file:
-            file.readline()  # Skip the header line
-            for line in file:
-                card = line.strip("\n").split(" of ")
-                self.deck.append(Card(card[1], card[0]))
+        if filename != "NULL":
+            with open(filename, "r") as file:
+                file.readline()  # Skip the header line
+                for line in file:
+                    card = line.strip("\n").split(" of ")
+                    self.deck.append(Card(card[1], card[0]))
     
     def __len__(self):
         """
@@ -35,6 +35,10 @@ class Deck:
         Removes a card from the deck.
         """
         self.deck.remove(card)
+
+    def shuffle_deck(self):
+        random.shuffle(self.deck)
+        print("Deck shuffled.")
     
 class Hand:
 

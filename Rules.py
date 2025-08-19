@@ -20,7 +20,7 @@ class Crazy_Eight_Rules:
             return True
         return False
 
-    def make_decision(self, hand: Hand, card_top: Card) -> Card:
+    def make_decision(self, hand: Hand, card_top: Card, deck: Deck, discards: Deck) -> Card:
         """Make a decision based on the current hand and the top card."""
         valid_cards = []
         for card in hand.hand:
@@ -35,11 +35,18 @@ class Crazy_Eight_Rules:
             card = hand.deck.deck[0]
             hand.deck.deck.remove(card)
             hand.hand.append(card)
-            while not self.comparison(card_top, card):
+            while not self.comparison(card_top, card) and len(hand.deck.deck) > 0:
                 card = hand.deck.deck[0]
                 hand.deck.deck.remove(card)
                 hand.hand.append(card)
-            return card
+                if len(hand.deck.deck) == 0:
+                    if len(deck) <= 0:
+                        deck.deck = discards.deck[:-1]
+                        discards.deck = [discards.deck[-1]]
+                        deck.shuffle_deck()
+
+            else:
+                return card
 
         
     
