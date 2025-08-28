@@ -14,7 +14,7 @@ class Deck:
                 for line in file:
                     card = line.strip("\n").split(" of ")
                     self.deck.append(Card(card[1], card[0]))
-    
+
     def __len__(self):
         """
         Returns the number of cards left in the deck
