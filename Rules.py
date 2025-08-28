@@ -28,34 +28,6 @@ class Crazy_Eight_Rules:
         if card_played.rank == "8":
             return True
         return False
-
-    def make_decision(self, hand: Hand, card_top: Card, deck: Deck, discards: Deck) -> Card:
-        """
-        Make a decision based on the current hand and the top card.
-        In Crazy Eights, the decision is to play a valid card or draw a card.
-        If there are no valid cards, the ONLY option is to draw a card until
-        a valid card is drawn.    
-        """
-        valid_cards = self.find_valid_cards(hand, card_top)
-        
-        if valid_cards:
-            print("Valid cards to play:", valid_cards)
-            return random.choice(valid_cards)
-        else:
-            # If no valid cards, draw until a valid card is found
-            print("No valid cards to play. Drawing until a valid card is drawn.")
-            drawn_card = self.draw(hand, deck, discards)
-            while not self.comparison(card_top, drawn_card):
-                drawn_card = self.draw(hand, deck, discards)
-            return drawn_card
-            
-    def get_valid_card(self, card_input: str, hand_length: int) -> int:
-        if card_input.lower() == "draw":
-            return -1
-        while not card_input.isdigit() or int(card_input) < 0 or\
-        int(card_input) >= hand_length:
-            card_input = input("Invalid input. Please enter a valid card number (enter draw to draw a card): ")
-        return int(card_input)
     
     def check_deck(self, deck: Deck, discards: Deck):
         """
@@ -86,6 +58,9 @@ class Crazy_Eight_Rules:
         return players
     
     def check_win(self, players: list[Player]) -> bool:
+        """
+        In Crazy Eights, a player wins when they have no cards left.
+        """
         for player in players:
             if len(player.hand.hand) == 0:
                 print(f"{player.name} wins!")
@@ -93,28 +68,34 @@ class Crazy_Eight_Rules:
         return False
 
     def find_valid_cards(self, hand: Hand, card_top: Card) -> list[Card]:
+        """
+        Finds all valid cards that can be played from the hand.
+        """
         valids = []
         for card in hand.hand:
             if self.comparison(card_top, card):
                 valids.append(card)
         return valids
 
-    def draw(self, hand: Hand, deck: Deck, discards: Deck) -> Card:
-        print("Drawing a card...")
-        card = hand.deck.deck[0]
-        hand.deck.deck.remove(card)
-        hand.hand.append(card)
-        print("You drew:", card)
-        self.check_deck(deck, discards)
-        return card
-    
-    def play_card(self, hand: Hand, card: Card, player: str, discards: Deck):
-        print(f"{player} played: {card}")
-        hand.remove_card(card)
-        discards.deck.append(card)
-        return card
+    def determine_choices(self, hand: Hand, card_top: Card) -> list[int]:
+        """
+        Determines the valid choices a player can make.
+        Returns a list of indices of valid cards in the hand, 
+        plus -1 for drawing a card.
+        """
+        choices = [-1]  # -1 represents the option to draw a card
+        valid_cards = self.find_valid_cards(hand, card_top)
+        for card in valid_cards:
+            choices.append(hand.hand.index(card))
+        return choices
     
     def process_choice(self, hand: Hand, deck: Deck, discards: Deck) -> Card:
+        """
+        Make a manual decision based on the current hand and the top card.
+        In Crazy Eights, the decision is to play a valid card or draw a card.
+        If there are no valid cards, the ONLY option is to draw a card until
+        a valid card is drawn.    
+        """ 
         choices = self.determine_choices(hand, discards.deck[-1])
         print("Your choices are:", choices)
         choice = input("Enter the number of the card you want to play (or -1 to draw a card): ")
@@ -130,11 +111,39 @@ class Crazy_Eight_Rules:
                 choice = input("Invalid choice. Please enter a valid choice: ")
             choice = int(choice)
         return hand.hand[choice]
-
     
-    def determine_choices(self, hand: Hand, card_top: Card) -> list[int]:
-        choices = [-1]  # -1 represents the option to draw a card
-        valid_cards = self.find_valid_cards(hand, card_top)
-        for card in valid_cards:
-            choices.append(hand.hand.index(card))
-        return choices
+    def make_decision(self, hand: Hand, card_top: Card, deck: Deck, discards: Deck) -> Card:
+        """
+        Make an automatic decision based on the current hand and the top card.
+        In Crazy Eights, the decision is to play a valid card or draw a card.
+        If there are no valid cards, the ONLY option is to draw a card until
+        a valid card is drawn.    
+        """ 
+        choices = self.determine_choices(hand, card_top)
+        choice = random.choice(choices)
+        while choice == -1:
+            self.draw(hand, deck, discards)
+            choices = self.determine_choices(hand, discards.deck[-1])
+            choice = random.choice(choices)
+        return hand.hand[choice]
+    
+    def draw(self, hand: Hand, deck: Deck, discards: Deck) -> Card:
+        """
+        Draws a card from the deck to the hand.
+        """
+        print("Drawing a card...")
+        card = hand.deck.deck[0]
+        hand.deck.deck.remove(card)
+        hand.hand.append(card)
+        print("You drew:", card)
+        self.check_deck(deck, discards)
+        return card
+
+    def play_card(self, hand: Hand, card: Card, player: str, discards: Deck):
+        """"
+        Plays a card from the hand to the discard pile.
+        """
+        print(f"{player} played: {card}")
+        hand.remove_card(card)
+        discards.deck.append(card)
+        return card
