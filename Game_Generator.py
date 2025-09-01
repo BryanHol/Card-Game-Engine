@@ -1,8 +1,6 @@
 from Hand_Generator import Deck, Hand
 from Rules import Crazy_Eight_Rules as CERules
 
-crazy_eights = CERules()
-
 class Game:
     def __init__(self, deck_filename: str, ruleset: CERules):
         self.ruleset = ruleset
@@ -13,8 +11,6 @@ class Game:
 
     def play(self):
         self.players = self.ruleset.start_state(self.deck, self.discard_pile)
-
-        print("Top card is:", self.discard_pile.deck[-1])
         win_con = self.ruleset.check_win(self.players)
 
         while not win_con:
@@ -34,14 +30,14 @@ class Game:
         """
         print(f"{player}'s turn. {hand}") 
         played_card = self.ruleset.process_choice(hand, self.deck, self.discard_pile)
-        self.discard_pile.deck[-1] = self.ruleset.play_card(hand, played_card, player, self.discard_pile)
+        self.ruleset.play_card(hand, played_card, player, self.discard_pile)
 
     def auto_play(self, player: str, hand: Hand):
         """
         This function is for automatic play, where the game plays itself.
         """
         print(f"{player}'s turn. {hand}")
-        played_card = crazy_eights.make_decision(hand, self.discard_pile.deck[-1], self.deck, self.discard_pile)
+        played_card = self.ruleset.make_decision(hand, self.deck, self.discard_pile)
         self.ruleset.play_card(hand, played_card, player, self.discard_pile)
 
 

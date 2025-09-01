@@ -15,7 +15,7 @@ class Crazy_Eight_Rules:
 
     def __init__(self):
         self.hand_size = 5
-        self.max_players = 2
+        self.max_players = 5
     
     def comparison(self, card_top: Card, card_played: Card) -> bool:
         """
@@ -54,6 +54,8 @@ class Crazy_Eight_Rules:
         length = len(players)
         for i in range(self.max_players - length):
             players.append(Player("Player " + str(length + i + 1), Hand(self.hand_size, deck), human=False))
+        
+        print("Top card is:", discards.deck[-1])
 
         return players
     
@@ -112,14 +114,14 @@ class Crazy_Eight_Rules:
             choice = int(choice)
         return hand.hand[choice]
     
-    def make_decision(self, hand: Hand, card_top: Card, deck: Deck, discards: Deck) -> Card:
+    def make_decision(self, hand: Hand, deck: Deck, discards: Deck) -> Card:
         """
         Make an automatic decision based on the current hand and the top card.
         In Crazy Eights, the decision is to play a valid card or draw a card.
         If there are no valid cards, the ONLY option is to draw a card until
         a valid card is drawn.    
         """ 
-        choices = self.determine_choices(hand, card_top)
+        choices = self.determine_choices(hand, discards.deck[-1])
         choice = random.choice(choices)
         while choice == -1:
             self.draw(hand, deck, discards)
