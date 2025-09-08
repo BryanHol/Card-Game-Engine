@@ -5,7 +5,6 @@ class Game:
     def __init__(self, deck_filename: str, ruleset: CERules):
         self.ruleset = ruleset
         self.deck = Deck(deck_filename)
-        self.deck.shuffle_deck()
         self.discard_pile = Deck()
         self.players = []
 
@@ -29,16 +28,16 @@ class Game:
         This function is for manual play, where players can input their moves.
         """
         print(f"{player}'s turn. {hand}") 
-        played_card = self.ruleset.process_choice(hand, self.deck, self.discard_pile)
-        self.ruleset.play_card(hand, played_card, player, self.discard_pile)
+        card = self.ruleset.process_choice(hand, self.deck, self.discard_pile)
+        self.ruleset.play_card(hand, card, player, self.discard_pile)
 
     def auto_play(self, player: str, hand: Hand):
         """
         This function is for automatic play, where the game plays itself.
         """
         print(f"{player}'s turn. {hand}")
-        played_card = self.ruleset.make_decision(hand, self.deck, self.discard_pile)
-        self.ruleset.play_card(hand, played_card, player, self.discard_pile)
+        card = self.ruleset.make_decision(hand, self.deck, self.discard_pile)
+        self.ruleset.play_card(hand, card, player, self.discard_pile)
 
 
 crazy_eights_game = Game("Classic_Deck.txt", CERules())

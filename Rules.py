@@ -17,15 +17,15 @@ class Crazy_Eight_Rules:
         self.hand_size = 5
         self.max_players = 5
     
-    def comparison(self, card_top: Card, card_played: Card) -> bool:
+    def comparison(self, card_top: Card, card_play: Card) -> bool:
         """
         In Crazy Eights, a card can be played if:
             - The card is an 8
             - The rank or suit matches the top card on the discard pile
         """
-        if card_top.rank == card_played.rank or card_top.suit == card_played.suit:
+        if card_top.rank == card_play.rank or card_top.suit == card_play.suit:
             return True
-        if card_played.rank == "8":
+        if card_play.rank == "8":
             return True
         return False
     
@@ -44,17 +44,19 @@ class Crazy_Eight_Rules:
         In Crazy Eights, the game begins by drawing the top card from the deck.
         Every game can have up to 5 players; each player is dealt 5 cards.
         """
-        discards.deck.append(deck.deck[0])
-        deck.remove_card(deck.deck[0])
-
         players = []
+        deck.shuffle_deck()
         num_players = int(input("How many players? (0 to 5): "))
         for i in range(num_players):
-            players.append(Player("Player " + str(i+1), Hand(self.hand_size, deck)))
+            players.append(Player("Player " + str(i+1), 
+                                  Hand(self.hand_size, deck)))
         length = len(players)
         for i in range(self.max_players - length):
-            players.append(Player("Player " + str(length + i + 1), Hand(self.hand_size, deck), human=False))
+            players.append(Player("Player " + str(length + i + 1), 
+                                  Hand(self.hand_size, deck), human=False))
         
+        discards.deck.append(deck.deck[0])
+        deck.remove_card(deck.deck[0])
         print("Top card is:", discards.deck[-1])
 
         return players
@@ -100,16 +102,20 @@ class Crazy_Eight_Rules:
         """ 
         choices = self.determine_choices(hand, discards.deck[-1])
         print("Your choices are:", choices)
-        choice = input("Enter the number of the card you want to play (or -1 to draw a card): ")
-        while (choice != "-1" and not choice.isdigit()) or int(choice) not in choices:
+        choice = input("Enter the number of the card you want to play "\
+        "(or -1 to draw a card): ")
+        while (choice != "-1" and not choice.isdigit()) \
+            or int(choice) not in choices:
             choice = input("Invalid choice. Please enter a valid choice: ")
         choice = int(choice)
         while choice == -1:
             self.draw(hand, deck, discards)
             choices = self.determine_choices(hand, discards.deck[-1])
             print("Your choices are:", choices)
-            choice = input("Enter the number of the card you want to play (or -1 to draw a card): ")
-            while (choice != "-1" and not choice.isdigit()) or int(choice) not in choices:
+            choice = input("Enter the number of the card you want to play"\
+            " (or -1 to draw a card): ")
+            while (choice != "-1" and not choice.isdigit())\
+                or int(choice) not in choices:
                 choice = input("Invalid choice. Please enter a valid choice: ")
             choice = int(choice)
         return hand.hand[choice]
